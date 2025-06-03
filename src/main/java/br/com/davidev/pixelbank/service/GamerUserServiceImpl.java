@@ -11,11 +11,14 @@ import java.time.LocalDateTime;
 public class GamerUserServiceImpl implements GamerUserService{
 
     private final GamerRepository gamerRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public GamerUserServiceImpl(GamerRepository gamerRepository, PasswordEncoder passwordEncoder) {
         this.gamerRepository = gamerRepository;
-        this.passwordEncoder = passwordEncoder; // Atribuir
+        this.passwordEncoder = passwordEncoder;
+
     }
+
 
     @Override
     @Transactional
