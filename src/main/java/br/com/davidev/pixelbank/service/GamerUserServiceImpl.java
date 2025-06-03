@@ -2,6 +2,7 @@ package br.com.davidev.pixelbank.service;
 
 import br.com.davidev.pixelbank.dto.GamerUserCreateRequestDTO;
 import br.com.davidev.pixelbank.dto.GamerUserResponseDTO;
+import br.com.davidev.pixelbank.exception.ResourceNotFoundException;
 import br.com.davidev.pixelbank.repository.GamerRepository;
 import br.com.davidev.pixelbank.gamermodel.GamerUser;
 import br.com.davidev.pixelbank.service.GamerUserService;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-
 @Service
 public class GamerUserServiceImpl implements GamerUserService {
 
@@ -57,4 +57,23 @@ public class GamerUserServiceImpl implements GamerUserService {
             return responseDTO;
 
         }
+    @Override
+    @Transactional(readOnly = true)
+    public GamerUserResponseDTO findUserById(Long id) {
+        GamerUser gamerUser = gamerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário Gamer não encontrado com o ID: " + id));
+
+        GamerUserResponseDTO responseDTO = new GamerUserResponseDTO();
+        responseDTO.setId(gamerUser.getId());
+        responseDTO.setUsername(gamerUser.getUsername());
+        responseDTO.setEmail(gamerUser.getEmail());
+
+        // Verifique o nome do campo xp no seu GamerUserResponseDTO (xp ou xpPoints) e ajuste o setter
+        responseDTO.setXpPoints(gamerUser.getXpPoints());
+
+        responseDTO.setLevel(gamerUser.getLevel());
+        responseDTO.setCreatedAt(gamerUser.getCreatedAt());
+
+        return responseDTO;
+    }
     }
