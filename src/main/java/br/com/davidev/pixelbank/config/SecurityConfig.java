@@ -30,6 +30,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/users/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/users").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/users/{id}").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/users/{id}").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();

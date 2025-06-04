@@ -2,6 +2,7 @@ package br.com.davidev.pixelbank.service;
 
 import br.com.davidev.pixelbank.dto.GamerUserCreateRequestDTO;
 import br.com.davidev.pixelbank.dto.GamerUserResponseDTO;
+import br.com.davidev.pixelbank.dto.GamerUserUpdateDTO;
 import br.com.davidev.pixelbank.exception.ResourceNotFoundException;
 import br.com.davidev.pixelbank.repository.GamerRepository;
 import br.com.davidev.pixelbank.gamermodel.GamerUser;
@@ -10,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.text.BreakIterator;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import java.time.LocalDateTime;
@@ -20,6 +24,7 @@ public class GamerUserServiceImpl implements GamerUserService {
 
     private final GamerRepository gamerRepository;
     private final PasswordEncoder passwordEncoder;
+
 
     // Construtor para injeção de dependências (forma recomendada)
     @Autowired // Opcional se tiver apenas um construtor a partir do Spring 4.3
@@ -100,4 +105,43 @@ public class GamerUserServiceImpl implements GamerUserService {
         dto.setCreatedAt(gamerUser.getCreatedAt());
         return dto;
         }
+
+
+    @Override
+    @Transactional
+    public GamerUserResponseDTO updateUser(Long id, GamerUserUpdateDTO updateDTO) {
+        GamerUser existingUser = gamerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário Gamer não encontrado com o ID: " + id + " para atualização."));
+        boolean hasChanges = false;
+
+        if (updateDTO.getUsername() != null && !updateDTO.getUsername().isBlank() && !updateDTO.getUsername().equalsIgnoreCase(existingUser.getUsername())) {
+            Optional<GamerUser> userWithNewUsername = gamerRepository.findByUsernameIgnoreCase(updateDTO.getUsername());
+            if (userWithNewUsername.isPresent() && !userWithNewUsername.get().getId().equals(existingUser.getId())) {
+                throw new IllegalArgumentException("Username '" + updateDTO.getUsername() + "' já está em uso por outro usuário.");
+
+            }
+            existingUser.setUsername(updateDTO.getUsername());
+            hasChanges = true;
+        }
+
+        if (updateDTO.getEmail() != null && !updateDTO.getEmail().isBlank() && !updateDTO.getEmail().equalsIgnoreCase(existingUser.getEmail())) {
+            // Verifica se o novo email já está em uso por OUTRO usuário
+            Optional<GamerUser> userWithNewEmail = gamerRepository.findByEmailIgnoreCase(updateDTO.getEmail());
+            if (userWithNewEmail.isPresent() && !userWithNewEmail.get().getId().equals(existingUser.getId())) {
+                throw new IllegalArgumentException("Email '" + updateDTO.getEmail() + "' já está em uso por outro usuário.");
+            }
+            existingUser.setEmail(updateDTO.getEmail());
+            hasChanges = true;
+
+        }
+
+        if (hasChanges) {
+            GamerUser updatedUser = gamerRepository.save(existingUser);
+            // Mapeia a entidade ATUALIZADA para o DTO de resposta
+            return convertToResponseDTO(updatedUser);
+        } else {
+            // Se não houve mudanças, apenas retorna os dados do usuário existente mapeados para DTO
+            return convertToResponseDTO(existingUser);
+        }
     }
+}

@@ -27,7 +27,7 @@ public class GamerUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name ="username", nullable = false, unique = true,length = 50)
     private String username;
@@ -40,7 +40,7 @@ public class GamerUser {
     private String passwordHash;
 
     @Column(name = "xp_points", nullable = false)
-    private long xpPoints;
+    private Long xpPoints;
 
     @Column (nullable = false)
     private Integer level;
