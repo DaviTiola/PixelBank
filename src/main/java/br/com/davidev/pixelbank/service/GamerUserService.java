@@ -14,4 +14,6 @@ public interface GamerUserService {
     List<GamerUserResponseDTO> findAllUsers();
 
     GamerUserResponseDTO updateUser(Long id, GamerUserUpdateDTO updateDTO);
+
+    void deleteUser (Long id);
 }

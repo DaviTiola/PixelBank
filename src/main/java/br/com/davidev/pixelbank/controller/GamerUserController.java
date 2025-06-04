@@ -48,4 +48,10 @@ public class GamerUserController {
         GamerUserResponseDTO updatedUser =gamerUserService.updateUser(id, updateDTO);
         return ResponseEntity.ok(updatedUser);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    gamerUserService.deleteUser(id);
+    return ResponseEntity.noContent().build();
+    }
 }

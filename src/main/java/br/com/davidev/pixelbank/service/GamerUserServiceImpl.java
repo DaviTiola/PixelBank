@@ -144,4 +144,13 @@ public class GamerUserServiceImpl implements GamerUserService {
             return convertToResponseDTO(existingUser);
         }
     }
+
+    @Override
+    @Transactional
+    public void deleteUser(Long id) {
+        if (!gamerRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Usuário Gamer não foi encontrado com o ID: " + id +" Deleção não realizada");
+        }
+        gamerRepository.deleteById(id);
+    }
 }
