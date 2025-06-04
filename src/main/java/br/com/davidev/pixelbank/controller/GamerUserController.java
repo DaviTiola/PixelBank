@@ -3,6 +3,7 @@ package br.com.davidev.pixelbank.controller;
 
 import br.com.davidev.pixelbank.dto.GamerUserCreateRequestDTO;
 import br.com.davidev.pixelbank.dto.GamerUserResponseDTO;
+import br.com.davidev.pixelbank.dto.GamerUserUpdateDTO;
 import br.com.davidev.pixelbank.service.GamerUserService;
 import br.com.davidev.pixelbank.service.GamerUserServiceImpl;
 import jakarta.validation.Valid;
@@ -39,5 +40,12 @@ public class GamerUserController {
     public ResponseEntity<List<GamerUserResponseDTO>> findAllUsers() {
         List<GamerUserResponseDTO> users = gamerUserService.findAllUsers();
         return ResponseEntity.ok(users);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<GamerUserResponseDTO> updateUser(@PathVariable Long id,
+                                                           @Valid @RequestBody GamerUserUpdateDTO updateDTO) {
+        GamerUserResponseDTO updatedUser =gamerUserService.updateUser(id, updateDTO);
+        return ResponseEntity.ok(updatedUser);
     }
 }
