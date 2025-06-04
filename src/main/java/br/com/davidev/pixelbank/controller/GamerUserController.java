@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/users")
 public class GamerUserController {
@@ -33,4 +35,9 @@ public class GamerUserController {
         return ResponseEntity.ok(userResponseDTO);
     }
 
+    @GetMapping
+    public ResponseEntity<List<GamerUserResponseDTO>> findAllUsers() {
+        List<GamerUserResponseDTO> users = gamerUserService.findAllUsers();
+        return ResponseEntity.ok(users);
+    }
 }

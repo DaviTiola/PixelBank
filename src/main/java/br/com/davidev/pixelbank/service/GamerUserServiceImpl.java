@@ -6,13 +6,15 @@ import br.com.davidev.pixelbank.exception.ResourceNotFoundException;
 import br.com.davidev.pixelbank.repository.GamerRepository;
 import br.com.davidev.pixelbank.gamermodel.GamerUser;
 import br.com.davidev.pixelbank.service.GamerUserService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.stream.Collectors;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 @Service
 public class GamerUserServiceImpl implements GamerUserService {
 
@@ -76,4 +78,26 @@ public class GamerUserServiceImpl implements GamerUserService {
 
         return responseDTO;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<GamerUserResponseDTO> findAllUsers() {
+        List<GamerUser> allGamerUsers = gamerRepository.findAll();
+        List<GamerUserResponseDTO> responseDTOs = allGamerUsers.stream()
+            .map(this:: convertToResponseDTO)
+                .collect(Collectors.toList());
+
+        return responseDTOs;
+    }
+
+    private GamerUserResponseDTO convertToResponseDTO(GamerUser gamerUser) {
+        GamerUserResponseDTO dto = new GamerUserResponseDTO();
+        dto.setId(gamerUser.getId());
+        dto.setUsername(gamerUser.getUsername());
+        dto.setEmail(gamerUser.getEmail());
+        dto.setXpPoints(gamerUser.getXpPoints());
+        dto.setLevel(gamerUser.getLevel());
+        dto.setCreatedAt(gamerUser.getCreatedAt());
+        return dto;
+        }
     }
