@@ -4,15 +4,15 @@ import br.com.davidev.pixelbank.dto.GamerUserCreateRequestDTO;
 import br.com.davidev.pixelbank.dto.GamerUserResponseDTO;
 import br.com.davidev.pixelbank.dto.GamerUserUpdateDTO;
 import br.com.davidev.pixelbank.exception.ResourceNotFoundException;
+import br.com.davidev.pixelbank.gamermodel.Account;
+import br.com.davidev.pixelbank.repository.AccountRepository;
 import br.com.davidev.pixelbank.repository.GamerRepository;
 import br.com.davidev.pixelbank.gamermodel.GamerUser;
-import br.com.davidev.pixelbank.service.GamerUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.BreakIterator;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -28,9 +28,12 @@ public class GamerUserServiceImpl implements GamerUserService {
 
     // Construtor para injeção de dependências (forma recomendada)
     @Autowired // Opcional se tiver apenas um construtor a partir do Spring 4.3
-    public GamerUserServiceImpl(GamerRepository gamerRepository, PasswordEncoder passwordEncoder) {
+    public GamerUserServiceImpl(GamerRepository gamerRepository,
+                                PasswordEncoder passwordEncoder,
+                                AccountRepository accountRepository) {
         this.gamerRepository = gamerRepository;
         this.passwordEncoder = passwordEncoder;
+        this.accountRepository = accountRepository;
     }
 
     @Override
@@ -51,6 +54,15 @@ public class GamerUserServiceImpl implements GamerUserService {
 
             GamerUser savedUser = gamerRepository.save(gamerUserEntity);
 
+        Account newAccount = new Account();
+        newAccount.setUser(savedUser);
+
+
+        String accountNumber = "PXB-" + savedUser.getId() + "-" + (System.currentTimeMillis() % 10000);
+        newAccount.setAccountNumber(accountNumber);
+
+
+        accountRepository.save(newAccount);
 
             GamerUserResponseDTO responseDTO = new GamerUserResponseDTO();
             responseDTO.setId(savedUser.getId());
@@ -153,4 +165,7 @@ public class GamerUserServiceImpl implements GamerUserService {
         }
         gamerRepository.deleteById(id);
     }
-}
+    private final AccountRepository accountRepository;
+
+    }
+
